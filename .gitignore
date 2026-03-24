@@ -1,0 +1,23 @@
+# Temporary donor/reference material (not part of the new platform source)
+legacy_reference/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Common local build/test artifacts
+node_modules/
+dist/
+build/
+coverage/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Local environment files
+.env
+.env.local
+.venv/
+venv/
