@@ -1,0 +1,375 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+:root {
+  --bg: #f3efe4;
+  --panel: #ffffff;
+  --panel-soft: #f7f9fb;
+  --text: #15233c;
+  --muted: #536273;
+  --line: #d9e2ea;
+  --accent: #0f8a70;
+  --accent-strong: #0a6d59;
+  --danger: #a7272f;
+  --success: #2c8756;
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 5%, #e2f4ef 0%, transparent 35%),
+    radial-gradient(circle at 90% 0%, #ffe7d2 0%, transparent 30%),
+    var(--bg);
+}
+
+code {
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(243, 239, 228, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  padding: 1rem 1.5rem;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.brand p {
+  margin: 0.25rem 0 0.85rem;
+  color: var(--muted);
+}
+
+nav {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.38rem 0.8rem;
+  color: var(--text);
+  background: white;
+  font-size: 0.92rem;
+}
+
+.nav-link.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
+
+.app-main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.2rem;
+}
+
+.page h2 {
+  margin-top: 0;
+}
+
+.page p {
+  color: var(--muted);
+}
+
+.run-form,
+.result-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.nested-panel {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.8rem;
+}
+
+.form-section + .form-section {
+  margin-top: 1rem;
+}
+
+.form-section h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+}
+
+.field-inline {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.55rem;
+}
+
+.field-inline.compact {
+  grid-template-columns: auto 1fr;
+  margin-bottom: 0;
+}
+
+.field-inline span {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+  background: white;
+}
+
+button {
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent);
+  color: white;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.checkbox-row {
+  grid-template-columns: auto 1fr;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.75rem;
+}
+
+.metric-card {
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.6rem;
+}
+
+.metric-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.metric-value {
+  font-size: 1rem;
+}
+
+.info-item {
+  background: var(--panel-soft);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem;
+}
+
+.info-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.info-item strong {
+  font-size: 0.95rem;
+}
+
+.steps-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.steps-table th,
+.steps-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.45rem 0.35rem;
+  text-align: left;
+  font-size: 0.92rem;
+}
+
+.step-badge {
+  border-radius: 999px;
+  padding: 0.08rem 0.5rem;
+  font-size: 0.82rem;
+  border: 1px solid var(--line);
+}
+
+.step-badge.success {
+  border-color: #a6d7c2;
+  color: var(--success);
+  background: #ecfaf3;
+}
+
+.step-badge.failed {
+  border-color: #e3a9ad;
+  color: var(--danger);
+  background: #fdeef0;
+}
+
+.step-badge.skipped {
+  border-color: #dbd9c9;
+  color: #6f6a46;
+  background: #f8f5e7;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.45rem 0.35rem;
+  text-align: left;
+  font-size: 0.9rem;
+  vertical-align: top;
+}
+
+.data-table.compact th,
+.data-table.compact td {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.3rem;
+}
+
+.line-chart {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbfcfd;
+}
+
+.debug-json {
+  margin-top: 0.8rem;
+  max-height: 360px;
+  overflow: auto;
+  background: #0d1623;
+  color: #d9f2ff;
+  border-radius: 10px;
+  padding: 0.8rem;
+  font-size: 0.8rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.simple-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.simple-list li {
+  margin: 0.2rem 0;
+}
+
+.loading-state {
+  margin-top: 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: #edf6ff;
+  border: 1px solid #bfd8f2;
+}
+
+.error-alert {
+  margin-top: 1rem;
+  border-radius: 10px;
+  border: 1px solid #e3a9ad;
+  background: #fff4f5;
+  padding: 0.6rem 0.75rem;
+}
+
+.error-alert h3 {
+  margin: 0 0 0.25rem;
+  color: var(--danger);
+  font-size: 0.95rem;
+}
+
+.error-alert p {
+  margin: 0;
+  color: #6a3035;
+}
+
+.local-error {
+  color: var(--danger);
+  margin: 0.2rem 0 0.8rem;
+}
+
+.controls-row {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.controls-row a {
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  background: white;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.data-table td button {
+  padding: 0.3rem 0.55rem;
+  font-size: 0.82rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.6rem;
+}
+
+@media (max-width: 760px) {
+  .field-inline {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+}

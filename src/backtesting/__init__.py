@@ -1,0 +1,75 @@
+"""Research backtesting subsystem."""
+
+from .contracts import (
+    BacktestConfig,
+    BacktestInput,
+    BacktestResult,
+    BacktestSummary,
+    ExecutionTiming,
+    ExitReason,
+    EquityPoint,
+    IntrabarExitPolicy,
+    PositionDirection,
+    RiskExitConfig,
+    SignalEvent,
+    SizingMode,
+    Trade,
+)
+from .costs import (
+    CommissionModel,
+    CompositeCommissionModel,
+    FillModel,
+    FixedBpsCommissionModel,
+    FixedBpsSlippageModel,
+    FixedBpsSpreadModel,
+    FixedFeeCommissionModel,
+    SlippageModel,
+    SpreadModel,
+)
+from .engine import BacktestSimulator
+from .execution import (
+    protective_levels,
+    resolve_intrabar_risk_exit,
+    should_flip_position,
+    should_ignore_signal,
+    target_position_direction,
+)
+from .monte_carlo import MonteCarloSummary, bootstrap_trade_pnl
+from .walk_forward import WalkForwardResult, WalkForwardRunner, WalkForwardWindow, rolling_windows
+
+__all__ = [
+    "BacktestConfig",
+    "BacktestInput",
+    "BacktestSummary",
+    "BacktestResult",
+    "ExecutionTiming",
+    "SizingMode",
+    "IntrabarExitPolicy",
+    "ExitReason",
+    "PositionDirection",
+    "RiskExitConfig",
+    "SignalEvent",
+    "Trade",
+    "EquityPoint",
+    "SpreadModel",
+    "SlippageModel",
+    "CommissionModel",
+    "FillModel",
+    "FixedBpsSpreadModel",
+    "FixedBpsSlippageModel",
+    "FixedBpsCommissionModel",
+    "FixedFeeCommissionModel",
+    "CompositeCommissionModel",
+    "BacktestSimulator",
+    "target_position_direction",
+    "should_ignore_signal",
+    "should_flip_position",
+    "protective_levels",
+    "resolve_intrabar_risk_exit",
+    "WalkForwardWindow",
+    "WalkForwardResult",
+    "WalkForwardRunner",
+    "rolling_windows",
+    "MonteCarloSummary",
+    "bootstrap_trade_pnl",
+]

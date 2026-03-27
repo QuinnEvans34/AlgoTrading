@@ -12,9 +12,17 @@ node_modules/
 dist/
 build/
 coverage/
+artifacts/
 .pytest_cache/
 __pycache__/
 *.pyc
+*.tsbuildinfo
+
+# Frontend generated/transpiled artifacts (TS source-of-truth)
+frontend/src/**/*.js
+frontend/src/**/*.d.ts
+frontend/vite.config.js
+frontend/vite.config.d.ts
 
 # Local environment files
 .env
