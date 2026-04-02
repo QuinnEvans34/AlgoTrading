@@ -8,6 +8,7 @@ Python command note: use `py -3` on Windows and `python3` on macOS/Linux.
 ## Prerequisites
 - Python 3.11+ (`py -3 --version`)
 - Node.js 20+ and npm (`node --version`, `npm --version`)
+- Docker Desktop or a local Docker engine if `DATABASE_ENABLED=true`
 
 ## 1) Clone and install
 
@@ -49,6 +50,13 @@ Creates:
 - `artifacts/paper_trading`
 - `artifacts/live_execution`
 
+When `DATABASE_ENABLED=true` and `DATABASE_URL` is configured, bootstrap also:
+- starts the repo-local Postgres container from `docker-compose.yml`
+- waits for database readiness
+- runs `alembic upgrade head`
+
+If you want a file-only local session, set `DATABASE_ENABLED=false` before running bootstrap.
+
 ## 4) Start services
 
 ### Backend API
@@ -76,6 +84,20 @@ API operability smoke checks:
 py -3 scripts/dev.py smoke
 ```
 
+Backfill legacy saved-run metadata into Postgres:
+```bash
+py -3 scripts/backfill_research_metadata.py
+```
+
+Optional flags:
+- `--env-file path/to/.env`
+- `--root-dir path/to/artifacts/research_runs`
+
+Report migration completeness without modifying DB rows:
+```bash
+py -3 scripts/backfill_research_metadata.py --report-only
+```
+
 ## 6) Quick smoke demo
 ```bash
 py -3 scripts/dev.py demo
@@ -94,6 +116,11 @@ py -3 -m pip install -r requirements-dev.txt
 - Ensure backend is running at `http://127.0.0.1:8000`.
 - Verify `VITE_API_BASE_URL` in `.env` or `frontend/.env.local`.
 - Verify `API_CORS_ALLOWED_ORIGINS` includes frontend origin.
+
+### Bootstrap cannot start Postgres
+- Ensure Docker Desktop is running.
+- Check that port `5432` is available or adjust `DATABASE_URL` and `docker-compose.yml`.
+- You can temporarily disable DB bootstrap with `DATABASE_ENABLED=false`.
 
 ### OANDA/provider calls fail
 Expected when credentials are not configured.  

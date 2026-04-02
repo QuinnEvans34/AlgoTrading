@@ -1,0 +1,83 @@
+"""Database-backed persistence foundation for research metadata."""
+
+from .backfill import (
+    BackfillResult,
+    MetadataTransitionReport,
+    backfill_research_run_metadata,
+    report_research_run_metadata_transition,
+)
+from .db import DatabaseManager, create_database_manager
+from .errors import PersistenceError, PersistenceUnavailableError
+from .models import (
+    Base,
+    RecentAssetModel,
+    RecentCompareSetModel,
+    ResearchRunMetadataModel,
+    SavedResearchConfigModel,
+    WatchlistItemModel,
+)
+from .research_runs import (
+    ALLOWED_METADATA_SOURCES,
+    METADATA_SCHEMA_VERSION,
+    METADATA_SOURCE_ARTIFACT_RECONCILED,
+    METADATA_SOURCE_DUAL_WRITE,
+    METADATA_SOURCE_LEGACY_BACKFILL,
+    ResearchRunMetadataListResult,
+    ResearchRunMetadataQuery,
+    ResearchRunMetadataRecord,
+    ResearchRunMetadataRepository,
+    SQLAlchemyResearchRunMetadataRepository,
+    build_run_metadata_record,
+    compute_artifact_fingerprint,
+    metadata_record_fingerprint_payload,
+)
+from .workflow_objects import (
+    ALLOWED_SAVED_CONFIG_TYPES,
+    SAVED_CONFIG_SCHEMA_VERSION,
+    RecentAssetRecord,
+    RecentCompareSetRecord,
+    SQLAlchemyWorkflowPersistenceRepository,
+    SavedResearchConfigRecord,
+    WatchlistItemRecord,
+    WorkflowPersistenceRepository,
+    compute_recent_compare_fingerprint,
+)
+
+__all__ = [
+    "Base",
+    "ResearchRunMetadataModel",
+    "SavedResearchConfigModel",
+    "WatchlistItemModel",
+    "RecentAssetModel",
+    "RecentCompareSetModel",
+    "DatabaseManager",
+    "create_database_manager",
+    "PersistenceError",
+    "PersistenceUnavailableError",
+    "ALLOWED_METADATA_SOURCES",
+    "ResearchRunMetadataRecord",
+    "ResearchRunMetadataQuery",
+    "ResearchRunMetadataListResult",
+    "ResearchRunMetadataRepository",
+    "SQLAlchemyResearchRunMetadataRepository",
+    "build_run_metadata_record",
+    "compute_artifact_fingerprint",
+    "metadata_record_fingerprint_payload",
+    "METADATA_SCHEMA_VERSION",
+    "METADATA_SOURCE_DUAL_WRITE",
+    "METADATA_SOURCE_LEGACY_BACKFILL",
+    "METADATA_SOURCE_ARTIFACT_RECONCILED",
+    "BackfillResult",
+    "MetadataTransitionReport",
+    "backfill_research_run_metadata",
+    "report_research_run_metadata_transition",
+    "ALLOWED_SAVED_CONFIG_TYPES",
+    "SAVED_CONFIG_SCHEMA_VERSION",
+    "SavedResearchConfigRecord",
+    "WatchlistItemRecord",
+    "RecentAssetRecord",
+    "RecentCompareSetRecord",
+    "WorkflowPersistenceRepository",
+    "SQLAlchemyWorkflowPersistenceRepository",
+    "compute_recent_compare_fingerprint",
+]

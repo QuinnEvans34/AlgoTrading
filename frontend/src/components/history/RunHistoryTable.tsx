@@ -46,6 +46,7 @@ export function RunHistoryTable({
                 <td>
                   <input
                     type="checkbox"
+                    aria-label={`Select run ${run.run_id}`}
                     checked={checked}
                     onChange={() => onToggleSelection(run.run_id)}
                   />

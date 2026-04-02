@@ -9,6 +9,7 @@ from .config import APISettings
 from .dependencies import get_settings
 from .errors import install_exception_handlers
 from .routes import (
+    asset_research_router,
     compare_router,
     health_router,
     history_router,
@@ -19,6 +20,7 @@ from .routes import (
     research_router,
     results_router,
     settings_router,
+    workflow_router,
 )
 
 
@@ -40,6 +42,7 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
     app.dependency_overrides[get_settings] = lambda: cfg
     install_exception_handlers(app)
     app.include_router(health_router, prefix=cfg.api_prefix)
+    app.include_router(asset_research_router, prefix=cfg.api_prefix)
     app.include_router(metadata_router, prefix=cfg.api_prefix)
     app.include_router(market_data_router, prefix=cfg.api_prefix)
     app.include_router(research_router, prefix=cfg.api_prefix)
@@ -49,6 +52,7 @@ def create_app(settings: APISettings | None = None) -> FastAPI:
     app.include_router(paper_trading_router, prefix=cfg.api_prefix)
     app.include_router(live_execution_router, prefix=cfg.api_prefix)
     app.include_router(settings_router, prefix=cfg.api_prefix)
+    app.include_router(workflow_router, prefix=cfg.api_prefix)
     return app
 
 

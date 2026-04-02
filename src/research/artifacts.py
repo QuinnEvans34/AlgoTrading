@@ -15,6 +15,24 @@ from ml_data import MLDatasetArtifact
 from modeling import TaskType, TrainingRunArtifact
 
 from .contracts import ResearchWorkflowType, RunStatus, StepStatus, ResearchStepResult
+from .persisted_models import (
+    PersistedCandleTimeRange,
+    PersistedDrawdownEpisode,
+    PersistedDrawdownPoint,
+    PersistedEquityPoint,
+    PersistedFeatureImportanceItem,
+    PersistedInstrument,
+    PersistedMLDetail,
+    PersistedMLSummary,
+    PersistedModelComparisonEntry,
+    PersistedModelReport,
+    PersistedRunDetail,
+    PersistedRunSummary,
+    PersistedStepResult,
+    PersistedStrategyDetail,
+    PersistedStrategySummary,
+    PersistedStrategyTrade,
+)
 
 
 def _json_safe(value: Any) -> Any:
@@ -92,165 +110,183 @@ class ResearchRunArtifact:
     step_results: tuple[ResearchStepResult, ...] = ()
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
-    def to_summary_dict(self) -> dict[str, Any]:
-        summary: dict[str, Any] = {
-            "run_id": self.run_id,
-            "run_name": self.run_name,
-            "workflow_type": self.workflow_type.value,
-            "status": self.status.value,
-            "started_at": self.started_at.isoformat(),
-            "ended_at": self.ended_at.isoformat(),
-            "duration_ms": self.duration_ms,
-            "instrument": {
-                "symbol": self.instrument.symbol,
-                "asset_class": self.instrument.asset_class.value,
-                "venue": self.instrument.venue,
-                "quote_currency": self.instrument.quote_currency,
-            },
-            "interval": self.interval.value,
-            "candle_count": self.candle_count,
-            "candle_source_type": self.candle_source_type,
-            "step_results": [
-                {
-                    "step_name": step.step_name,
-                    "status": step.status.value,
-                    "started_at": step.started_at.isoformat(),
-                    "ended_at": step.ended_at.isoformat(),
-                    "duration_ms": step.duration_ms,
-                    "error_type": step.error_type,
-                    "error_message": step.error_message,
-                    "metadata": _json_safe(step.metadata),
-                }
-                for step in self.step_results
-            ],
-            "metadata": _json_safe(self.metadata),
-        }
+    def to_persisted_summary(self) -> PersistedRunSummary:
+        candle_time_range = None
         if self.historical_candles:
-            summary["candle_time_range"] = {
-                "start": self.historical_candles[0].timestamp.isoformat(),
-                "end": self.historical_candles[-1].timestamp.isoformat(),
-            }
+            candle_time_range = PersistedCandleTimeRange(
+                start=self.historical_candles[0].timestamp,
+                end=self.historical_candles[-1].timestamp,
+            )
+        strategy_summary = None
         if self.strategy_output is not None:
-            strategy_summary = self.strategy_output.summary
-            summary["strategy"] = {
-                "strategy_id": strategy_summary.strategy_id,
-                "total_trades": strategy_summary.total_trades,
-                "total_return_pct": strategy_summary.total_return_pct,
-                "total_net_pnl": strategy_summary.total_net_pnl,
-                "max_drawdown_pct": strategy_summary.max_drawdown_pct,
-                "sharpe_ratio": strategy_summary.sharpe_ratio,
-            }
+            summary = self.strategy_output.summary
+            strategy_summary = PersistedStrategySummary(
+                strategy_id=summary.strategy_id,
+                total_trades=summary.total_trades,
+                total_return_pct=summary.total_return_pct,
+                total_net_pnl=summary.total_net_pnl,
+                max_drawdown_pct=summary.max_drawdown_pct,
+                sharpe_ratio=summary.sharpe_ratio,
+            )
+        ml_summary = None
         if self.ml_output is not None:
-            ml_summary = self.ml_output.summary
-            summary["ml"] = {
-                "target_label": ml_summary.target_label,
-                "task_type": ml_summary.task_type.value,
-                "best_model_id": ml_summary.best_model_id,
-                "primary_metric_name": ml_summary.primary_metric_name,
-                "best_validation_value": ml_summary.best_validation_value,
-                "best_test_value": ml_summary.best_test_value,
-                "model_count_executed": ml_summary.model_count_executed,
-                "model_count_skipped": ml_summary.model_count_skipped,
-                "warning_count": ml_summary.warning_count,
-            }
-        return summary
+            summary = self.ml_output.summary
+            ml_summary = PersistedMLSummary(
+                target_label=summary.target_label,
+                task_type=summary.task_type.value,
+                best_model_id=summary.best_model_id,
+                primary_metric_name=summary.primary_metric_name,
+                best_validation_value=summary.best_validation_value,
+                best_test_value=summary.best_test_value,
+                model_count_executed=summary.model_count_executed,
+                model_count_skipped=summary.model_count_skipped,
+                warning_count=summary.warning_count,
+            )
+        return PersistedRunSummary(
+            run_id=self.run_id,
+            run_name=self.run_name,
+            workflow_type=self.workflow_type.value,
+            status=self.status.value,
+            started_at=self.started_at,
+            ended_at=self.ended_at,
+            duration_ms=self.duration_ms,
+            instrument=PersistedInstrument(
+                symbol=self.instrument.symbol,
+                asset_class=self.instrument.asset_class.value,
+                venue=self.instrument.venue,
+                quote_currency=self.instrument.quote_currency,
+            ),
+            interval=self.interval.value,
+            candle_count=self.candle_count,
+            candle_source_type=self.candle_source_type,
+            step_results=tuple(
+                PersistedStepResult(
+                    step_name=step.step_name,
+                    status=step.status.value,
+                    started_at=step.started_at,
+                    ended_at=step.ended_at,
+                    duration_ms=step.duration_ms,
+                    error_type=step.error_type,
+                    error_message=step.error_message,
+                    metadata=_json_safe(step.metadata),
+                )
+                for step in self.step_results
+            ),
+            metadata=_json_safe(self.metadata),
+            candle_time_range=candle_time_range,
+            strategy=strategy_summary,
+            ml=ml_summary,
+        )
+
+    def to_summary_dict(self) -> dict[str, Any]:
+        return self.to_persisted_summary().to_dict()
+
+    def to_persisted_detail(self) -> PersistedRunDetail:
+        strategy_detail = None
+        if self.strategy_output is not None:
+            backtest = self.strategy_output.backtest_result
+            report = self.strategy_output.diagnostics_report
+            strategy_detail = PersistedStrategyDetail(
+                backtest_summary=_json_safe(backtest.summary),
+                performance=_json_safe(report.performance),
+                trade_analysis=_json_safe(report.trade_analysis),
+                risk=_json_safe(report.risk),
+                assumptions=_json_safe(report.assumptions),
+                equity_curve=tuple(
+                    PersistedEquityPoint(
+                        timestamp=point.timestamp,
+                        equity=point.equity,
+                        cash=point.cash,
+                        unrealized_pnl=point.unrealized_pnl,
+                        drawdown_pct=point.drawdown_pct,
+                    )
+                    for point in report.series.equity_curve
+                ),
+                drawdown_curve=tuple(
+                    PersistedDrawdownPoint(
+                        timestamp=point.timestamp,
+                        drawdown_pct=point.drawdown_pct,
+                    )
+                    for point in report.series.drawdown_series
+                ),
+                trades=tuple(
+                    PersistedStrategyTrade(
+                        entry_time=trade.entry_time,
+                        exit_time=trade.exit_time,
+                        direction=trade.direction.value,
+                        entry_price=trade.entry_price,
+                        exit_price=trade.exit_price,
+                        units=trade.units,
+                        gross_pnl=trade.gross_pnl,
+                        net_pnl=trade.net_pnl,
+                        return_pct=trade.return_pct,
+                        bars_held=trade.bars_held,
+                        exit_reason=trade.exit_reason.value,
+                    )
+                    for trade in backtest.trades
+                ),
+                drawdown_episodes=tuple(
+                    PersistedDrawdownEpisode(
+                        peak_time=episode.peak_time,
+                        trough_time=episode.trough_time,
+                        recovery_time=episode.recovery_time,
+                        depth_pct=episode.depth_pct,
+                        duration_bars=episode.duration_bars,
+                        recovery_bars=episode.recovery_bars,
+                    )
+                    for episode in report.drawdown_episodes
+                ),
+            )
+        ml_detail = None
+        if self.ml_output is not None:
+            dataset = self.ml_output.dataset_artifact
+            training = self.ml_output.training_artifact
+            ml_detail = PersistedMLDetail(
+                target_label=self.ml_output.target_label,
+                task_type=self.ml_output.task_type.value,
+                dataset_metadata=_json_safe(dataset.metadata),
+                comparison_table=tuple(
+                    PersistedModelComparisonEntry(
+                        model_id=entry.model_id,
+                        family=entry.family.value,
+                        primary_metric_name=entry.primary_metric_name,
+                        validation_value=entry.validation_value,
+                        test_value=entry.test_value,
+                        higher_is_better=entry.higher_is_better,
+                    )
+                    for entry in training.comparison_table
+                ),
+                model_reports=tuple(
+                    PersistedModelReport(
+                        model_id=report.model_id,
+                        family=report.family.value,
+                        task_type=report.task_type.value,
+                        skipped=report.skipped,
+                        skip_reason=report.skip_reason,
+                        metrics_by_split=_json_safe(report.metrics_by_split),
+                        feature_importance=(
+                            None
+                            if report.feature_importance is None
+                            else tuple(
+                                PersistedFeatureImportanceItem(feature=name, score=score)
+                                for name, score in report.feature_importance
+                            )
+                        ),
+                        warnings=tuple(_json_safe(report.warnings)),
+                    )
+                    for report in training.model_reports
+                ),
+                run_metadata=_json_safe(training.run_metadata),
+                warnings=tuple(_json_safe(training.warnings)),
+            )
+        return PersistedRunDetail(
+            summary=self.to_persisted_summary(),
+            strategy_detail=strategy_detail,
+            ml_detail=ml_detail,
+        )
 
     def to_detail_dict(self) -> dict[str, Any]:
-        detail: dict[str, Any] = {
-            "summary": self.to_summary_dict(),
-            "strategy_detail": None,
-            "ml_detail": None,
-        }
-        if self.strategy_output is not None:
-            detail["strategy_detail"] = self._serialize_strategy_detail()
-        if self.ml_output is not None:
-            detail["ml_detail"] = self._serialize_ml_detail()
-        return detail
-
-    def _serialize_strategy_detail(self) -> dict[str, Any]:
-        assert self.strategy_output is not None
-        backtest = self.strategy_output.backtest_result
-        report = self.strategy_output.diagnostics_report
-        trades = [
-            {
-                "entry_time": trade.entry_time.isoformat(),
-                "exit_time": trade.exit_time.isoformat(),
-                "direction": trade.direction.value,
-                "entry_price": trade.entry_price,
-                "exit_price": trade.exit_price,
-                "units": trade.units,
-                "gross_pnl": trade.gross_pnl,
-                "net_pnl": trade.net_pnl,
-                "return_pct": trade.return_pct,
-                "bars_held": trade.bars_held,
-                "exit_reason": trade.exit_reason.value,
-            }
-            for trade in backtest.trades
-        ]
-        equity_curve = [
-            {
-                "timestamp": point.timestamp.isoformat(),
-                "equity": point.equity,
-                "cash": point.cash,
-                "unrealized_pnl": point.unrealized_pnl,
-                "drawdown_pct": point.drawdown_pct,
-            }
-            for point in report.series.equity_curve
-        ]
-        drawdown_curve = [
-            {
-                "timestamp": point.timestamp.isoformat(),
-                "drawdown_pct": point.drawdown_pct,
-            }
-            for point in report.series.drawdown_series
-        ]
-        return {
-            "backtest_summary": _json_safe(backtest.summary),
-            "performance": _json_safe(report.performance),
-            "trade_analysis": _json_safe(report.trade_analysis),
-            "risk": _json_safe(report.risk),
-            "assumptions": _json_safe(report.assumptions),
-            "equity_curve": equity_curve,
-            "drawdown_curve": drawdown_curve,
-            "trades": trades,
-            "drawdown_episodes": _json_safe(report.drawdown_episodes),
-        }
-
-    def _serialize_ml_detail(self) -> dict[str, Any]:
-        assert self.ml_output is not None
-        dataset = self.ml_output.dataset_artifact
-        training = self.ml_output.training_artifact
-        model_reports = []
-        for report in training.model_reports:
-            feature_importance = (
-                None
-                if report.feature_importance is None
-                else [
-                    {"feature": name, "score": score}
-                    for name, score in report.feature_importance
-                ]
-            )
-            model_reports.append(
-                {
-                    "model_id": report.model_id,
-                    "family": report.family.value,
-                    "task_type": report.task_type.value,
-                    "skipped": report.skipped,
-                    "skip_reason": report.skip_reason,
-                    "metrics_by_split": _json_safe(report.metrics_by_split),
-                    "feature_importance": feature_importance,
-                    "warnings": _json_safe(report.warnings),
-                }
-            )
-        return {
-            "target_label": self.ml_output.target_label,
-            "task_type": self.ml_output.task_type.value,
-            "dataset_metadata": _json_safe(dataset.metadata),
-            "comparison_table": _json_safe(training.comparison_table),
-            "model_reports": model_reports,
-            "run_metadata": _json_safe(training.run_metadata),
-            "warnings": _json_safe(training.warnings),
-        }
+        return self.to_persisted_detail().to_dict()
 
 
 def build_strategy_summary(*, strategy_id: str, backtest_result: BacktestResult) -> StrategyBranchSummary:

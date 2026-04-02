@@ -1,5 +1,6 @@
 import argparse
 import importlib.util
+import os
 import pathlib
 import sys
 import unittest
@@ -57,10 +58,36 @@ class DevEntrypointTests(unittest.TestCase):
                 with patch.object(module, "resolve_npm_executable", return_value="npm"):
                     with patch.object(module, "run_command", return_value=0) as run_command:
                         with patch.object(module, "ensure_artifact_dirs_from_env", return_value=[]):
-                            exit_code = module.run_bootstrap(args)
+                            with patch.dict(os.environ, {"DATABASE_ENABLED": "false"}, clear=False):
+                                exit_code = module.run_bootstrap(args)
         self.assertEqual(exit_code, 0)
         load_env.assert_called_once()
         run_command.assert_called_once()
+
+    def test_bootstrap_starts_postgres_and_runs_migrations_when_db_enabled(self) -> None:
+        module = load_module()
+        args = argparse.Namespace(
+            env_file=str(ROOT / ".env"),
+            skip_init_artifacts=False,
+            with_check=False,
+            with_smoke=False,
+        )
+        with patch.object(module, "load_env_file"):
+            with patch.object(module, "require_python_311_plus", return_value=(True, "")):
+                with patch.object(module, "resolve_npm_executable", return_value="npm"):
+                    with patch.object(module, "ensure_artifact_dirs_from_env", return_value=[]):
+                        with patch.object(module, "run_command", return_value=0) as run_command:
+                            with patch.dict(
+                                os.environ,
+                                {
+                                    "DATABASE_ENABLED": "true",
+                                    "DATABASE_URL": "postgresql+psycopg://capstone:capstone@127.0.0.1:5432/capstone",
+                                },
+                                clear=False,
+                            ):
+                                exit_code = module.run_bootstrap(args)
+        self.assertEqual(exit_code, 0)
+        self.assertGreaterEqual(run_command.call_count, 5)
 
     def test_main_dispatches_to_script_command(self) -> None:
         module = load_module()

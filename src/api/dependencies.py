@@ -5,6 +5,11 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from asset_research import (
+    AssetResearchProvider,
+    AssetResearchService,
+    OpenAIResponsesAssetResearchProvider,
+)
 from config import AppSettings
 from fastapi import Depends
 from live_execution import LiveExecutionService, LiveExecutionSettings
@@ -16,6 +21,14 @@ from market_data import (
     OandaMarketDataProvider,
 )
 from paper_trading import PaperAccountConfig, PaperTradingService, PaperTradingStorage
+from persistence import (
+    DatabaseManager,
+    ResearchRunMetadataRepository,
+    SQLAlchemyResearchRunMetadataRepository,
+    SQLAlchemyWorkflowPersistenceRepository,
+    WorkflowPersistenceRepository,
+    create_database_manager,
+)
 from research import ResearchRunner
 
 from .config import APISettings
@@ -58,10 +71,91 @@ def get_market_data_service(
     return MarketDataService(registry)
 
 
+@lru_cache(maxsize=4)
+def _database_manager_for_settings(app_settings: AppSettings) -> DatabaseManager | None:
+    return create_database_manager(app_settings.database)
+
+
+def get_database_manager(
+    app_settings: AppSettings = Depends(get_app_settings),
+) -> DatabaseManager | None:
+    return _database_manager_for_settings(app_settings)
+
+
+def get_research_run_metadata_repository(
+    manager: DatabaseManager | None = Depends(get_database_manager),
+) -> ResearchRunMetadataRepository | None:
+    if manager is None:
+        return None
+    return SQLAlchemyResearchRunMetadataRepository(
+        session_factory=manager.session_factory
+    )
+
+
+def get_workflow_persistence_repository(
+    manager: DatabaseManager | None = Depends(get_database_manager),
+) -> WorkflowPersistenceRepository | None:
+    if manager is None:
+        return None
+    return SQLAlchemyWorkflowPersistenceRepository(
+        session_factory=manager.session_factory
+    )
+
+
+@lru_cache(maxsize=4)
+def _asset_research_provider_for_settings(
+    app_settings: AppSettings,
+) -> AssetResearchProvider | None:
+    ai_settings = app_settings.ai_research
+    if not ai_settings.enabled:
+        return None
+    return OpenAIResponsesAssetResearchProvider(
+        api_key=ai_settings.openai_api_key,
+        model=ai_settings.openai_model,
+        base_url=ai_settings.openai_base_url,
+        timeout_seconds=ai_settings.timeout_seconds,
+    )
+
+
+def get_asset_research_provider(
+    app_settings: AppSettings = Depends(get_app_settings),
+) -> AssetResearchProvider | None:
+    return _asset_research_provider_for_settings(app_settings)
+
+
+def get_asset_research_service(
+    app_settings: AppSettings = Depends(get_app_settings),
+    market_data_service: MarketDataService = Depends(get_market_data_service),
+    provider_registry: MarketDataProviderRegistry = Depends(get_provider_registry),
+    metadata_repository: ResearchRunMetadataRepository | None = Depends(
+        get_research_run_metadata_repository
+    ),
+    workflow_repository: WorkflowPersistenceRepository | None = Depends(
+        get_workflow_persistence_repository
+    ),
+    provider: AssetResearchProvider | None = Depends(get_asset_research_provider),
+) -> AssetResearchService:
+    return AssetResearchService(
+        provider=provider,
+        market_data_service=market_data_service,
+        provider_registry=provider_registry,
+        metadata_repository=metadata_repository,
+        workflow_repository=workflow_repository,
+        run_output_dir=Path(app_settings.storage.run_output_dir),
+        enabled=app_settings.ai_research.enabled,
+    )
+
+
 def get_research_runner(
     market_data_service: MarketDataService = Depends(get_market_data_service),
+    metadata_repository: ResearchRunMetadataRepository | None = Depends(
+        get_research_run_metadata_repository
+    ),
 ) -> ResearchRunner:
-    return ResearchRunner(market_data_service=market_data_service)
+    return ResearchRunner(
+        market_data_service=market_data_service,
+        metadata_repository=metadata_repository,
+    )
 
 
 def get_paper_trading_service(
@@ -96,8 +190,15 @@ def get_api_service(
     market_data_service: MarketDataService = Depends(get_market_data_service),
     provider_registry: MarketDataProviderRegistry = Depends(get_provider_registry),
     research_runner: ResearchRunner = Depends(get_research_runner),
+    metadata_repository: ResearchRunMetadataRepository | None = Depends(
+        get_research_run_metadata_repository
+    ),
+    workflow_repository: WorkflowPersistenceRepository | None = Depends(
+        get_workflow_persistence_repository
+    ),
     paper_trading_service: PaperTradingService = Depends(get_paper_trading_service),
     live_execution_service: LiveExecutionService = Depends(get_live_execution_service),
+    asset_research_service: AssetResearchService = Depends(get_asset_research_service),
 ) -> APIService:
     return APIService(
         settings=settings,
@@ -107,4 +208,7 @@ def get_api_service(
         provider_registry=provider_registry,
         paper_trading_service=paper_trading_service,
         live_execution_service=live_execution_service,
+        asset_research_service=asset_research_service,
+        metadata_repository=metadata_repository,
+        workflow_repository=workflow_repository,
     )

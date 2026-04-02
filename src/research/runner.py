@@ -4,11 +4,18 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import json
+import logging
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
 from market_data import Candle
 from market_data.service import MarketDataService
+from persistence.errors import PersistenceUnavailableError
+from persistence.research_runs import (
+    METADATA_SOURCE_DUAL_WRITE,
+    ResearchRunMetadataRepository,
+    build_run_metadata_record,
+)
 
 from .artifacts import (
     MLBranchArtifact,
@@ -29,6 +36,7 @@ from .contracts import (
     RunStatus,
     StepStatus,
 )
+from .history import load_persisted_run_manifest
 from .storage import manifest_path_for_run, persist_run_with_index
 from .validation import validate_request
 from .workflows import (
@@ -38,6 +46,9 @@ from .workflows import (
     run_strategy_backtest,
     run_strategy_diagnostics,
 )
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def _utcnow() -> datetime:
@@ -84,8 +95,14 @@ def _compute_run_status(
 
 
 class ResearchRunner:
-    def __init__(self, *, market_data_service: MarketDataService | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        market_data_service: MarketDataService | None = None,
+        metadata_repository: ResearchRunMetadataRepository | None = None,
+    ) -> None:
         self._market_data_service = market_data_service
+        self._metadata_repository = metadata_repository
 
     def run(self, request: ResearchRunRequest) -> ResearchRunArtifact:
         validate_request(request)
@@ -281,12 +298,42 @@ class ResearchRunner:
             summary_path=summary_path,
             detail_path=detail_path,
         )
+        self._persist_metadata_record(
+            root_dir=root_dir,
+            artifact=artifact,
+        )
         return {
             "summary": summary_path,
             "detail": detail_path,
             "manifest": manifest_path_for_run(root_dir, manifest.run_id),
             "index": root_dir / "index.json",
         }
+
+    def _persist_metadata_record(
+        self,
+        *,
+        root_dir: Path,
+        artifact: ResearchRunArtifact,
+    ) -> None:
+        if self._metadata_repository is None:
+            return
+        try:
+            summary = artifact.to_persisted_summary()
+            manifest = load_persisted_run_manifest(root_dir, artifact.run_id)
+            self._metadata_repository.upsert_run_metadata(
+                build_run_metadata_record(
+                    root_dir=root_dir,
+                    summary=summary,
+                    manifest=manifest,
+                    metadata_source=METADATA_SOURCE_DUAL_WRITE,
+                )
+            )
+        except (PersistenceUnavailableError, OSError, TypeError, ValueError) as exc:
+            LOGGER.warning(
+                "Research metadata DB unavailable for run '%s'; keeping artifact-only persistence. %s",
+                artifact.run_id,
+                exc,
+            )
 
     def _build_artifact(
         self,

@@ -4,11 +4,15 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import os
 from pathlib import Path
 import sys
+import time
+from urllib.parse import urlparse
 
 from _common import (
     DEFAULT_ENV_FILE,
+    ROOT,
     ensure_artifact_dirs_from_env,
     load_env_file,
     require_python_311_plus,
@@ -101,6 +105,45 @@ def run_script(script: str, forwarded_args: list[str] | None = None) -> int:
     return run_command(command)
 
 
+def _database_bootstrap_enabled() -> bool:
+    enabled = os.getenv("DATABASE_ENABLED", "").strip().lower() in {"1", "true", "yes", "on"}
+    url = os.getenv("DATABASE_URL", "").strip()
+    return enabled and url != ""
+
+
+def _database_identity_from_url() -> tuple[str, str]:
+    raw_url = os.getenv("DATABASE_URL", "").strip()
+    parsed = urlparse(raw_url)
+    username = parsed.username or "capstone"
+    database = parsed.path.lstrip("/") or "capstone"
+    return username, database
+
+
+def _wait_for_local_postgres(*, attempts: int = 20, delay_seconds: float = 1.0) -> int:
+    username, database = _database_identity_from_url()
+    for attempt in range(1, attempts + 1):
+        exit_code = run_command(
+            [
+                "docker",
+                "compose",
+                "exec",
+                "-T",
+                "postgres",
+                "pg_isready",
+                "-U",
+                username,
+                "-d",
+                database,
+            ],
+            label=f"Waiting for Postgres ({attempt}/{attempts})",
+            cwd=ROOT,
+        )
+        if exit_code == 0:
+            return 0
+        time.sleep(delay_seconds)
+    return 1
+
+
 def run_bootstrap(args: argparse.Namespace) -> int:
     env_file = Path(args.env_file)
     load_env_file(env_file)
@@ -124,6 +167,33 @@ def run_bootstrap(args: argparse.Namespace) -> int:
         print("Initialized artifact directories:")
         for path in paths:
             print(f"  - {path}")
+
+    if _database_bootstrap_enabled():
+        docker_exit = run_command(["docker", "--version"], label="Checking docker")
+        if docker_exit != 0:
+            print("Docker is required for local Postgres bootstrap.")
+            return docker_exit
+
+        compose_exit = run_command(
+            ["docker", "compose", "up", "-d", "postgres"],
+            label="Starting local Postgres",
+            cwd=ROOT,
+        )
+        if compose_exit != 0:
+            return compose_exit
+
+        ready_exit = _wait_for_local_postgres()
+        if ready_exit != 0:
+            print("Local Postgres did not become ready in time.")
+            return ready_exit
+
+        migrate_exit = run_command(
+            [sys.executable, "-m", "alembic", "upgrade", "head"],
+            label="Running database migrations",
+            cwd=ROOT,
+        )
+        if migrate_exit != 0:
+            return migrate_exit
 
     if args.with_check:
         exit_code = run_script("scripts/check.py")

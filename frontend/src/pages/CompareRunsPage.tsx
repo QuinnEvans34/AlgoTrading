@@ -5,8 +5,14 @@ import { ErrorAlert } from "../components/common/ErrorAlert";
 import { LoadingState } from "../components/common/LoadingState";
 import { CompareMetricCards } from "../components/compare/CompareMetricCards";
 import { CompareSummaryTable } from "../components/compare/CompareSummaryTable";
+import { RecentComparePanel } from "../components/workflow/RecentComparePanel";
 import { compareRuns } from "../lib/history/api";
 import type { CompareMode, CompareRunsResponse } from "../lib/history/types";
+import {
+  fetchRecentCompares,
+  touchRecentCompare
+} from "../lib/workflow/api";
+import type { RecentCompareSet } from "../lib/workflow/types";
 
 function parseIds(raw: string | null): string[] {
   if (!raw) {
@@ -23,9 +29,23 @@ export function CompareRunsPage() {
   const [result, setResult] = useState<CompareRunsResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
+  const [recentCompares, setRecentCompares] = useState<RecentCompareSet[]>([]);
+  const [recentCompareError, setRecentCompareError] = useState<unknown>(null);
 
   const ids = useMemo(() => parseIds(searchParams.get("ids")), [searchParams]);
   const mode = (searchParams.get("mode") as CompareMode | null) ?? "auto";
+
+  useEffect(() => {
+    async function loadRecentCompares() {
+      try {
+        const response = await fetchRecentCompares();
+        setRecentCompares(response.items);
+      } catch (err) {
+        setRecentCompareError(err);
+      }
+    }
+    void loadRecentCompares();
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -38,6 +58,13 @@ export function CompareRunsPage() {
       try {
         const response = await compareRuns({ run_ids: ids, mode });
         setResult(response);
+        try {
+          await touchRecentCompare({ compare_mode: mode, run_ids: ids });
+          const recent = await fetchRecentCompares();
+          setRecentCompares(recent.items);
+        } catch {
+          // Keep compare rendering stable even if recents persistence fails.
+        }
       } catch (err) {
         setError(err);
         setResult(null);
@@ -48,16 +75,34 @@ export function CompareRunsPage() {
     void load();
   }, [ids, mode]);
 
+  function useRecentCompare(item: RecentCompareSet) {
+    setSearchParams(
+      {
+        ids: item.run_ids.join(","),
+        mode: item.compare_mode
+      },
+      { replace: true }
+    );
+  }
+
   return (
     <section className="page">
       <h2>Compare Runs</h2>
       <p>Compare 2-5 compatible saved runs.</p>
+
+      {recentCompareError ? <ErrorAlert error={recentCompareError} /> : null}
+      <RecentComparePanel
+        items={recentCompares}
+        busy={loading}
+        onUse={useRecentCompare}
+      />
 
       <section className="result-panel">
         <h2>Selection</h2>
         <div className="field-inline compact">
           <span>Run IDs (CSV)</span>
           <input
+            aria-label="Run IDs (CSV)"
             value={ids.join(",")}
             onChange={(event) =>
               setSearchParams({ ids: event.target.value, mode }, { replace: true })
@@ -68,6 +113,7 @@ export function CompareRunsPage() {
         <div className="field-inline compact">
           <span>Mode</span>
           <select
+            aria-label="Compare mode"
             value={mode}
             onChange={(event) =>
               setSearchParams(

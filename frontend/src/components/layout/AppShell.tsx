@@ -1,15 +1,16 @@
 import { NavLink, Outlet } from "react-router-dom";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Home" },
-  { to: "/metadata", label: "Metadata" },
+  { to: "/", label: "Dashboard" },
+  { to: "/stocks", label: "Stocks" },
+  { to: "/forex", label: "Forex" },
+  { to: "/strategy", label: "Strategy Lab" },
+  { to: "/ml", label: "ML Lab" },
+  { to: "/history", label: "History" },
+  { to: "/compare", label: "Compare" },
+  { to: "/paper", label: "Paper" },
+  { to: "/live-execution", label: "Live" },
   { to: "/settings", label: "Settings" },
-  { to: "/live-execution", label: "Live Execution" },
-  { to: "/strategy", label: "Strategy Run" },
-  { to: "/ml", label: "ML Run" },
-  { to: "/paper", label: "Paper Trading" },
-  { to: "/history", label: "Run History" },
-  { to: "/compare", label: "Compare Runs" },
   { to: "/runs", label: "Legacy Runs" }
 ];
 
@@ -19,7 +20,7 @@ export function AppShell() {
       <header className="app-header">
         <div className="brand">
           <h1>Capstone Research Platform</h1>
-          <p>Backend-first multi-asset research shell</p>
+          <p>Multi-asset research workspace with curated browsing and saved workflows</p>
         </div>
         <nav>
           {NAV_ITEMS.map((item) => (

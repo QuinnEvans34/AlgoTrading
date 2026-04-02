@@ -5,8 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from config import (
+    AIResearchSettings,
     APIServerSettings,
     AppSettings,
+    DatabaseSettings,
     FeatureFlags,
     LiveSafetySettings,
     PaperTradingDefaults,
@@ -25,6 +27,9 @@ class APISettings:
     default_persist_summary: bool = False
     default_run_output_dir: str = "artifacts/research_runs"
     default_paper_trading_dir: str = "artifacts/paper_trading"
+    database_enabled: bool = False
+    database_url: str | None = None
+    database_echo: bool = False
     paper_default_account_id: str = "paper-main"
     paper_default_base_currency: str = "USD"
     paper_default_initial_cash: float = 100_000.0
@@ -51,6 +56,11 @@ class APISettings:
     oanda_account_id: str | None = None
     oanda_environment: str = "practice"
     oanda_timeout_seconds: int = 15
+    ai_research_enabled: bool = False
+    openai_api_key: str | None = None
+    openai_model: str | None = None
+    openai_base_url: str | None = None
+    ai_research_timeout_seconds: int = 30
     feature_research_api_enabled: bool = True
     feature_history_api_enabled: bool = True
     feature_compare_api_enabled: bool = True
@@ -73,6 +83,9 @@ class APISettings:
             default_persist_summary=settings.default_persist_summary,
             default_run_output_dir=settings.storage.run_output_dir,
             default_paper_trading_dir=settings.storage.paper_trading_dir,
+            database_enabled=settings.database.enabled,
+            database_url=settings.database.url,
+            database_echo=settings.database.echo,
             paper_default_account_id=settings.paper_defaults.account_id,
             paper_default_base_currency=settings.paper_defaults.base_currency,
             paper_default_initial_cash=settings.paper_defaults.initial_cash,
@@ -100,6 +113,11 @@ class APISettings:
             oanda_account_id=settings.provider_settings.oanda_account_id,
             oanda_environment=settings.provider_settings.oanda_environment,
             oanda_timeout_seconds=settings.provider_settings.oanda_timeout_seconds,
+            ai_research_enabled=settings.ai_research.enabled,
+            openai_api_key=settings.ai_research.openai_api_key,
+            openai_model=settings.ai_research.openai_model,
+            openai_base_url=settings.ai_research.openai_base_url,
+            ai_research_timeout_seconds=settings.ai_research.timeout_seconds,
             feature_research_api_enabled=settings.feature_flags.research_api_enabled,
             feature_history_api_enabled=settings.feature_flags.history_api_enabled,
             feature_compare_api_enabled=settings.feature_flags.compare_api_enabled,
@@ -124,6 +142,11 @@ class APISettings:
             storage=StorageSettings(
                 run_output_dir=self.default_run_output_dir,
                 paper_trading_dir=self.default_paper_trading_dir,
+            ),
+            database=DatabaseSettings(
+                enabled=self.database_enabled,
+                url=self.database_url,
+                echo=self.database_echo,
             ),
             paper_defaults=PaperTradingDefaults(
                 account_id=self.paper_default_account_id,
@@ -152,6 +175,13 @@ class APISettings:
                 oanda_account_id=self.oanda_account_id,
                 oanda_environment=self.oanda_environment,
                 oanda_timeout_seconds=self.oanda_timeout_seconds,
+            ),
+            ai_research=AIResearchSettings(
+                enabled=self.ai_research_enabled,
+                openai_api_key=self.openai_api_key,
+                openai_model=self.openai_model,
+                openai_base_url=self.openai_base_url,
+                timeout_seconds=self.ai_research_timeout_seconds,
             ),
             feature_flags=FeatureFlags(
                 research_api_enabled=self.feature_research_api_enabled,

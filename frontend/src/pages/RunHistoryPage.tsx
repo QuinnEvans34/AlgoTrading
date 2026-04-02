@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { ErrorAlert } from "../components/common/ErrorAlert";
 import { LoadingState } from "../components/common/LoadingState";
@@ -14,16 +14,63 @@ const DEFAULT_QUERY: HistoryListQuery = {
   sort: "started_desc"
 };
 
+function buildQueryFromSearchParams(searchParams: URLSearchParams): HistoryListQuery {
+  const q = searchParams.get("q");
+  const workflowType = searchParams.get("workflow_type");
+  const status = searchParams.get("status");
+  const sort = searchParams.get("sort");
+  const limit = searchParams.get("limit");
+  return {
+    ...DEFAULT_QUERY,
+    ...(q ? { q } : {}),
+    ...(workflowType ? { workflow_type: workflowType } : {}),
+    ...(status ? { status } : {}),
+    ...(sort === "started_asc" || sort === "started_desc" ? { sort } : {}),
+    ...(limit ? { limit: Number(limit) } : {})
+  };
+}
+
+function syncSearchParams(
+  setSearchParams: ReturnType<typeof useSearchParams>[1],
+  next: HistoryListQuery
+) {
+  const params = new URLSearchParams();
+  if (next.workflow_type) {
+    params.set("workflow_type", next.workflow_type);
+  }
+  if (next.status) {
+    params.set("status", next.status);
+  }
+  if (next.q) {
+    params.set("q", next.q);
+  }
+  if (next.limit) {
+    params.set("limit", String(next.limit));
+  }
+  if (next.sort) {
+    params.set("sort", next.sort);
+  }
+  setSearchParams(params, { replace: true });
+}
+
 export function RunHistoryPage() {
   const navigate = useNavigate();
-  const [queryDraft, setQueryDraft] = useState<HistoryListQuery>(DEFAULT_QUERY);
-  const [query, setQuery] = useState<HistoryListQuery>(DEFAULT_QUERY);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialQuery = buildQueryFromSearchParams(searchParams);
+  const [queryDraft, setQueryDraft] = useState<HistoryListQuery>(initialQuery);
+  const [query, setQuery] = useState<HistoryListQuery>(initialQuery);
   const [runs, setRuns] = useState<RunHistoryItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
+
+  useEffect(() => {
+    const next = buildQueryFromSearchParams(searchParams);
+    setQueryDraft(next);
+    setQuery(next);
+  }, [searchParams]);
 
   useEffect(() => {
     async function load() {
@@ -56,6 +103,7 @@ export function RunHistoryPage() {
   function resetFilters() {
     setQueryDraft(DEFAULT_QUERY);
     setQuery(DEFAULT_QUERY);
+    syncSearchParams(setSearchParams, DEFAULT_QUERY);
   }
 
   const selectedSummary = useMemo(
@@ -71,7 +119,11 @@ export function RunHistoryPage() {
       <RunHistoryFilters
         value={queryDraft}
         onChange={setQueryDraft}
-        onApply={() => setQuery({ ...queryDraft, offset: 0 })}
+        onApply={() => {
+          const nextQuery = { ...queryDraft, offset: 0 };
+          setQuery(nextQuery);
+          syncSearchParams(setSearchParams, nextQuery);
+        }}
         onReset={resetFilters}
         loading={loading}
       />

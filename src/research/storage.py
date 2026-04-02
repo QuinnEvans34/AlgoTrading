@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .artifacts import ResearchRunArtifact
+from .persisted_models import PersistedRunSummary
 
 SCHEMA_VERSION = 1
 INDEX_FILENAME = "index.json"
@@ -210,48 +211,31 @@ def index_path(root_dir: Path) -> Path:
     return root_dir / INDEX_FILENAME
 
 
-def build_manifest_from_summary_payload(
+def build_manifest_from_summary(
     *,
     root_dir: Path,
     run_id: str,
-    summary_payload: Mapping[str, Any],
+    summary: PersistedRunSummary,
     summary_path: Path,
     detail_path: Path | None,
     existing_manifest: RunManifest | None = None,
 ) -> RunManifest:
-    instrument = summary_payload.get("instrument", {})
-    started = _parse_dt(summary_payload.get("started_at"))
-    ended = _parse_dt(summary_payload.get("ended_at"))
     now = _utcnow()
     return RunManifest(
         schema_version=SCHEMA_VERSION,
         run_id=run_id,
-        run_name=str(summary_payload.get("run_name", run_id)),
-        workflow_type=str(summary_payload.get("workflow_type", "unknown")),
-        status=str(summary_payload.get("status", "unknown")),
-        started_at=started,
-        ended_at=ended,
-        duration_ms=(
-            None
-            if summary_payload.get("duration_ms") is None
-            else int(summary_payload.get("duration_ms"))
-        ),
-        instrument_symbol=str(
-            instrument.get("symbol", summary_payload.get("instrument_symbol", "unknown"))
-        ),
-        asset_class=(
-            None
-            if instrument.get("asset_class") is None
-            else str(instrument.get("asset_class"))
-        ),
-        interval=None if summary_payload.get("interval") is None else str(summary_payload.get("interval")),
-        candle_count=(
-            None
-            if summary_payload.get("candle_count") is None
-            else int(summary_payload.get("candle_count"))
-        ),
-        has_strategy=summary_payload.get("strategy") is not None,
-        has_ml=summary_payload.get("ml") is not None,
+        run_name=summary.run_name,
+        workflow_type=summary.workflow_type,
+        status=summary.status,
+        started_at=summary.started_at,
+        ended_at=summary.ended_at,
+        duration_ms=summary.duration_ms,
+        instrument_symbol=summary.instrument.symbol,
+        asset_class=summary.instrument.asset_class,
+        interval=summary.interval,
+        candle_count=summary.candle_count,
+        has_strategy=summary.strategy is not None,
+        has_ml=summary.ml is not None,
         summary_path=str(summary_path.relative_to(root_dir).as_posix()),
         detail_path=(
             None
@@ -332,7 +316,7 @@ def rebuild_index(root_dir: Path) -> RunIndex:
         detail_file = run_dir / "detail.json"
         manifest_file = run_dir / MANIFEST_FILENAME
         try:
-            summary_payload = _read_json(summary_file)
+            summary = PersistedRunSummary.load(summary_file)
         except (OSError, ValueError, TypeError):
             warnings.append(f"{run_id}:invalid_summary_json")
             continue
@@ -342,10 +326,10 @@ def rebuild_index(root_dir: Path) -> RunIndex:
                 existing_manifest = RunManifest.from_dict(_read_json(manifest_file))
             except (OSError, ValueError, TypeError):
                 warnings.append(f"{run_id}:invalid_manifest_json")
-        manifest = build_manifest_from_summary_payload(
+        manifest = build_manifest_from_summary(
             root_dir=root_dir,
             run_id=run_id,
-            summary_payload=summary_payload,
+            summary=summary,
             summary_path=summary_file,
             detail_path=detail_file if detail_file.exists() else None,
             existing_manifest=existing_manifest,
@@ -397,12 +381,12 @@ def persist_run_with_index(
     summary_path: Path,
     detail_path: Path,
 ) -> tuple[RunManifest, RunIndex]:
-    summary_payload = artifact.to_summary_dict()
+    summary = artifact.to_persisted_summary()
     existing_manifest = load_manifest(root_dir, artifact.run_id)
-    manifest = build_manifest_from_summary_payload(
+    manifest = build_manifest_from_summary(
         root_dir=root_dir,
         run_id=artifact.run_id,
-        summary_payload=summary_payload,
+        summary=summary,
         summary_path=summary_path,
         detail_path=detail_path,
         existing_manifest=existing_manifest,

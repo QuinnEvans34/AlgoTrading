@@ -250,6 +250,51 @@ export interface MarketDataPreviewResponse {
   metadata: Record<string, unknown>;
 }
 
+export interface AssetResearchAsset {
+  symbol: string;
+  asset_class: AssetClass;
+  name: string;
+}
+
+export interface GroundingDescriptor {
+  source: string;
+  status: "used" | "unavailable";
+  detail: string;
+}
+
+export interface AssetResearchMemoSection {
+  title: string;
+  content: string;
+}
+
+export interface GenerateAssetMemoRequest {
+  asset_class: AssetClass;
+  symbol: string;
+}
+
+export interface GenerateAssetMemoResponse {
+  asset: AssetResearchAsset;
+  generated_at: string;
+  sections: AssetResearchMemoSection[];
+  grounding: GroundingDescriptor[];
+  warnings: string[];
+}
+
+export interface AskAssetResearchQuestionRequest {
+  asset_class: AssetClass;
+  symbol: string;
+  question: string;
+}
+
+export interface AskAssetResearchQuestionResponse {
+  asset: AssetResearchAsset;
+  question: string;
+  generated_at: string;
+  answer: string;
+  grounding: GroundingDescriptor[];
+  warnings: string[];
+}
+
 export interface StoredRunSummaryListItem {
   run_id: string;
   run_name?: string | null;

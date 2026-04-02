@@ -23,7 +23,27 @@ from .contracts import (
     StepStatus,
     StrategyWorkflowSpec,
 )
-from .history import RunHistoryListResult, RunHistoryQuery, get_run_detail, get_run_manifest, get_run_summary, list_run_history
+from .history import (
+    RunHistoryListResult,
+    RunHistoryQuery,
+    get_run_detail,
+    get_run_manifest,
+    get_run_summary,
+    list_run_history,
+    load_persisted_run_detail,
+    load_persisted_run_manifest,
+    load_persisted_run_summary,
+    load_saved_run_bundle,
+)
+from .persisted_models import (
+    CompareMetricCard,
+    LoadedSavedRunBundle,
+    MLCompareRow,
+    PersistedManifestView,
+    PersistedRunDetail,
+    PersistedRunSummary,
+    StrategyCompareRow,
+)
 from .runner import ResearchRunner
 from .storage import (
     RunIndex,
@@ -68,8 +88,19 @@ __all__ = [
     "get_run_summary",
     "get_run_detail",
     "get_run_manifest",
+    "load_persisted_run_summary",
+    "load_persisted_run_detail",
+    "load_persisted_run_manifest",
+    "load_saved_run_bundle",
     "CompareRunsResult",
     "compare_saved_runs",
+    "PersistedRunSummary",
+    "PersistedRunDetail",
+    "PersistedManifestView",
+    "LoadedSavedRunBundle",
+    "CompareMetricCard",
+    "StrategyCompareRow",
+    "MLCompareRow",
     "SUPPORTED_STRATEGY_IDS",
     "resolve_ml_target_label",
     "validate_request",

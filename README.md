@@ -33,6 +33,7 @@ npm --prefix frontend install
 # macOS/Linux: cp .env.example .env
 py -3 scripts/dev.py bootstrap
 ```
+By default this now also starts a local Postgres container and runs `alembic upgrade head` when `DATABASE_ENABLED=true` and `DATABASE_URL` is set.
 
 4. Start backend/frontend:
 ```bash
@@ -57,6 +58,8 @@ py -3 scripts/dev.py demo
 ## Canonical Dev Commands
 
 - Bootstrap preflight: `py -3 scripts/dev.py bootstrap`
+- Legacy metadata backfill: `py -3 scripts/backfill_research_metadata.py`
+- Metadata transition report: `py -3 scripts/backfill_research_metadata.py --report-only`
 - Backend dev server: `py -3 scripts/dev.py backend`
 - Frontend dev server: `py -3 scripts/dev.py frontend`
 - Full checks: `py -3 scripts/dev.py check`
@@ -68,6 +71,9 @@ Legacy script entrypoints (`scripts/dev_backend.py`, etc.) remain supported for 
 ## Documentation
 
 - Local development guide: `docs/local-development.md`
+- Persistence foundation phase B1: `docs/persistence-foundation-phase-b1.md`
+- Persistence transition hardening phase B2: `docs/persistence-transition-hardening-phase-b2.md`
+- Workflow persistence phase B3: `docs/workflow-persistence-phase-b3.md`
 - Demo runbook: `docs/demo-runbook.md`
 - Deployment/dev foundation: `docs/deployment-foundation.md`
 - Final hardening checklist: `docs/final-hardening-checklist.md`

@@ -15,8 +15,14 @@ from paper_trading import (
     PaperPriceUpdateResult,
     PaperStateSnapshot,
 )
-from research import ResearchRunArtifact
+from research import CompareRunsResult, ResearchRunArtifact, RunIndexRecord
+from research.persisted_models import (
+    PersistedManifestView,
+    PersistedRunDetail,
+    PersistedRunSummary,
+)
 
+from .history_schemas import CompareRunsResponseSchema, RunHistoryItemSchema
 from .paper_trading_schemas import (
     PaperCancelActionResponseSchema,
     PaperFillSchema,
@@ -67,12 +73,57 @@ def serialize_run_summary(artifact: ResearchRunArtifact) -> RunSummaryResponseSc
     return RunSummaryResponseSchema.model_validate(artifact.to_summary_dict())
 
 
+def serialize_persisted_run_summary(summary: PersistedRunSummary) -> RunSummaryResponseSchema:
+    return RunSummaryResponseSchema.model_validate(summary.to_dict())
+
+
 def serialize_stored_run_summary(summary_payload: dict[str, Any]) -> RunSummaryResponseSchema:
     return RunSummaryResponseSchema.model_validate(summary_payload)
 
 
+def serialize_persisted_run_detail(detail: PersistedRunDetail) -> RunDetailResponseSchema:
+    return RunDetailResponseSchema.model_validate(detail.to_dict())
+
+
 def serialize_stored_run_detail(detail_payload: dict[str, Any]) -> RunDetailResponseSchema:
     return RunDetailResponseSchema.model_validate(detail_payload)
+
+
+def serialize_manifest_view(manifest: PersistedManifestView) -> dict[str, Any]:
+    return manifest.to_dict()
+
+
+def serialize_run_history_item(record: RunIndexRecord) -> RunHistoryItemSchema:
+    return RunHistoryItemSchema.model_validate(
+        {
+            "run_id": record.run_id,
+            "run_name": record.run_name,
+            "workflow_type": record.workflow_type,
+            "status": record.status,
+            "started_at": record.started_at,
+            "ended_at": record.ended_at,
+            "duration_ms": record.duration_ms,
+            "instrument_symbol": record.instrument_symbol,
+            "asset_class": record.asset_class,
+            "interval": record.interval,
+            "has_strategy": record.has_strategy,
+            "has_ml": record.has_ml,
+            "summary_available": record.summary_available,
+            "detail_available": record.detail_available,
+            "updated_at": record.updated_at,
+        }
+    )
+
+
+def serialize_compare_runs_result(result: CompareRunsResult) -> CompareRunsResponseSchema:
+    return CompareRunsResponseSchema.model_validate(
+        {
+            "mode": result.mode,
+            "warnings": list(result.warnings),
+            "cards": [card.to_dict() for card in result.cards],
+            "rows": [row.to_dict() for row in result.rows],
+        }
+    )
 
 
 def serialize_run_detail_from_summary(

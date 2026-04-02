@@ -1,0 +1,372 @@
+{
+  "stocks": [
+    {
+      "symbol": "AAPL",
+      "assetClass": "stock",
+      "name": "Apple",
+      "headline": "Consumer hardware platform with durable ecosystem pull.",
+      "description": "Large-cap hardware and services leader that tends to reward clean product-cycle and margin research.",
+      "tags": ["consumer-tech", "quality", "mega-cap"],
+      "preferredInterval": "1d",
+      "performanceLookbackDays": 180,
+      "sector": "Technology",
+      "exchange": "NASDAQ",
+      "profileBullets": [
+        "Track iPhone and services mix rather than hardware units in isolation.",
+        "Margin durability matters more than top-line acceleration in mature periods.",
+        "Capital return remains part of the equity story."
+      ],
+      "filingsFocus": [
+        "Services gross margin commentary",
+        "Regional demand shifts in Greater China",
+        "Inventory and channel inventory language"
+      ],
+      "performanceFocus": [
+        "Earnings gap follow-through",
+        "Relative strength against mega-cap peers",
+        "Drawdown behavior during risk-off weeks"
+      ],
+      "aiPrompts": [
+        "Check whether recent strategy runs cluster around earnings windows.",
+        "Compare saved runs that use different confidence thresholds on AAPL."
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "assetClass": "stock",
+      "name": "Microsoft",
+      "headline": "Enterprise software compounder with AI infrastructure leverage.",
+      "description": "Strong candidate for combining trend persistence research with AI-driven catalyst monitoring.",
+      "tags": ["enterprise", "cloud", "ai"],
+      "preferredInterval": "1d",
+      "performanceLookbackDays": 180,
+      "sector": "Technology",
+      "exchange": "NASDAQ",
+      "profileBullets": [
+        "Azure growth and margin trade-offs drive sentiment.",
+        "Enterprise recurring revenue lowers downside volatility versus higher-beta peers.",
+        "AI capex commentary often matters more than one-quarter EPS beats."
+      ],
+      "filingsFocus": [
+        "Azure and intelligent cloud commentary",
+        "Capex growth and datacenter spend",
+        "Copilot monetization language"
+      ],
+      "performanceFocus": [
+        "Trend persistence after cloud read-throughs",
+        "Gap behavior around earnings",
+        "Relative rotation versus NVDA and large software peers"
+      ],
+      "aiPrompts": [
+        "Review ML classification runs around cloud earnings dates.",
+        "Compare MSFT trend-following runs against AAPL and NVDA."
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "assetClass": "stock",
+      "name": "NVIDIA",
+      "headline": "High-beta AI infrastructure leader with event-heavy narrative risk.",
+      "description": "Useful for research that mixes momentum, volatility, and catalyst-aware comparison work.",
+      "tags": ["semis", "ai", "high-beta"],
+      "preferredInterval": "1d",
+      "performanceLookbackDays": 180,
+      "sector": "Semiconductors",
+      "exchange": "NASDAQ",
+      "profileBullets": [
+        "Narrative strength can dominate valuation-based arguments for long stretches.",
+        "Positioning and expectations matter around each earnings print.",
+        "Volatility regimes shift quickly after guidance updates."
+      ],
+      "filingsFocus": [
+        "Datacenter mix and customer concentration",
+        "Inventory normalization language",
+        "Gross margin trajectory commentary"
+      ],
+      "performanceFocus": [
+        "Post-earnings breakout persistence",
+        "Volatility compression before major prints",
+        "Relative breadth versus semiconductor basket"
+      ],
+      "aiPrompts": [
+        "Check whether saved ML templates overfit around one volatility regime.",
+        "Use compare to inspect how trend runs behave before and after earnings."
+      ]
+    },
+    {
+      "symbol": "AMZN",
+      "assetClass": "stock",
+      "name": "Amazon",
+      "headline": "Consumer plus cloud platform with multiple internal business cycles.",
+      "description": "Good research candidate when you want to separate retail margin improvements from cloud acceleration.",
+      "tags": ["consumer", "cloud", "platform"],
+      "preferredInterval": "1d",
+      "performanceLookbackDays": 180,
+      "sector": "Consumer Discretionary",
+      "exchange": "NASDAQ",
+      "profileBullets": [
+        "AWS commentary can overwhelm retail trends in price discovery.",
+        "Operating margin trajectory matters more than gross merchandise volume alone.",
+        "Advertising remains an underappreciated profitability driver."
+      ],
+      "filingsFocus": [
+        "AWS growth reacceleration",
+        "North America retail margin trends",
+        "Advertising contribution to operating income"
+      ],
+      "performanceFocus": [
+        "Post-earnings gap continuation",
+        "Cloud read-through correlation",
+        "Reaction to consumer demand updates"
+      ],
+      "aiPrompts": [
+        "Review AMZN runs split by cloud-heavy versus consumer-heavy periods.",
+        "Compare AMZN and MSFT when cloud narratives dominate."
+      ]
+    },
+    {
+      "symbol": "JPM",
+      "assetClass": "stock",
+      "name": "JPMorgan Chase",
+      "headline": "Money-center bank exposed to rates, credit, and capital markets tone.",
+      "description": "Useful when testing whether macro-sensitive equities need different research framing than tech leaders.",
+      "tags": ["financials", "rates", "quality"],
+      "preferredInterval": "1d",
+      "performanceLookbackDays": 240,
+      "sector": "Financials",
+      "exchange": "NYSE",
+      "profileBullets": [
+        "Net interest income and credit quality drive the core debate.",
+        "Capital markets tone can matter even when headline EPS is strong.",
+        "Rate-path expectations feed directly into the multiple."
+      ],
+      "filingsFocus": [
+        "Net interest income guidance",
+        "Credit reserve trends",
+        "Investment banking pipeline commentary"
+      ],
+      "performanceFocus": [
+        "Performance around Fed repricing windows",
+        "Trend stability versus regional banks",
+        "Drawdown resilience in financial stress"
+      ],
+      "aiPrompts": [
+        "Compare bank runs before and after major rate-path changes.",
+        "Check if saved strategy templates need different warmup settings for banks."
+      ]
+    },
+    {
+      "symbol": "XOM",
+      "assetClass": "stock",
+      "name": "Exxon Mobil",
+      "headline": "Integrated energy exposure tied to commodity and supply discipline.",
+      "description": "A practical watchlist name when you want cyclicals represented without adding a new data stack.",
+      "tags": ["energy", "cyclical", "commodity"],
+      "preferredInterval": "1d",
+      "performanceLookbackDays": 240,
+      "sector": "Energy",
+      "exchange": "NYSE",
+      "profileBullets": [
+        "Oil price regime matters more than one-quarter earnings noise.",
+        "Capital discipline and buybacks anchor the long-side thesis.",
+        "Geopolitical supply shocks can dominate near-term setups."
+      ],
+      "filingsFocus": [
+        "Upstream production guidance",
+        "Capex discipline and project timing",
+        "Cash return framework"
+      ],
+      "performanceFocus": [
+        "Correlation to crude trend changes",
+        "Relative performance versus broad equity indices",
+        "Gap reactions to commodity shocks"
+      ],
+      "aiPrompts": [
+        "Use compare to separate commodity-driven runs from broad-market trend runs.",
+        "Inspect whether ML classification works differently in energy names."
+      ]
+    }
+  ],
+  "forex": [
+    {
+      "symbol": "EUR_USD",
+      "assetClass": "forex",
+      "name": "Euro / US Dollar",
+      "headline": "Core macro pair centered on relative growth and rate expectations.",
+      "description": "The cleanest default FX research pair when testing provider-backed price previews and macro-aware workflows.",
+      "tags": ["major", "rates", "macro"],
+      "preferredInterval": "4h",
+      "performanceLookbackDays": 120,
+      "region": "Europe / United States",
+      "profileBullets": [
+        "Primary driver is relative central-bank path repricing.",
+        "Liquidity is deep enough for clean technical and ML experiments.",
+        "Often reacts cleanly to inflation and growth surprises."
+      ],
+      "macroDrivers": [
+        "ECB versus Fed policy divergence",
+        "Euro-area growth momentum",
+        "US inflation and payroll surprises"
+      ],
+      "performanceFocus": [
+        "Trend breaks after CPI and central-bank meetings",
+        "Range persistence during low-volatility windows",
+        "Session behavior across London and New York overlap"
+      ],
+      "aiPrompts": [
+        "Reuse recent compare sets to inspect regime changes after ECB meetings.",
+        "Review whether classification labels work better on 4h versus 1d intervals."
+      ]
+    },
+    {
+      "symbol": "GBP_USD",
+      "assetClass": "forex",
+      "name": "British Pound / US Dollar",
+      "headline": "Growth- and rates-sensitive major with sharper political sensitivity.",
+      "description": "A compact pair for testing watchlist continuity and macro-aware research framing.",
+      "tags": ["major", "macro", "uk"],
+      "preferredInterval": "4h",
+      "performanceLookbackDays": 120,
+      "region": "United Kingdom / United States",
+      "profileBullets": [
+        "BoE repricing often creates clean directional swings.",
+        "Political noise can increase event risk beyond pure data surprises.",
+        "Useful for testing response to cross-market risk appetite."
+      ],
+      "macroDrivers": [
+        "BoE policy outlook",
+        "UK inflation and wage data",
+        "US dollar broad strength"
+      ],
+      "performanceFocus": [
+        "Session-driven breakouts around UK releases",
+        "Volatility spikes near BoE and Fed decisions",
+        "Relative strength versus EUR_USD in European risk-off periods"
+      ],
+      "aiPrompts": [
+        "Compare GBP_USD and EUR_USD runs around policy divergence episodes.",
+        "Check if saved ML configs generalize across European majors."
+      ]
+    },
+    {
+      "symbol": "USD_JPY",
+      "assetClass": "forex",
+      "name": "US Dollar / Japanese Yen",
+      "headline": "Rates-differential pair with strong sensitivity to yield moves.",
+      "description": "Useful for research that blends macro repricing, trend persistence, and event-aware comparisons.",
+      "tags": ["major", "rates", "japan"],
+      "preferredInterval": "4h",
+      "performanceLookbackDays": 120,
+      "region": "United States / Japan",
+      "profileBullets": [
+        "US Treasury yields remain a dominant directional input.",
+        "BOJ policy shifts can trigger abrupt regime changes.",
+        "Intervention risk matters when moves become one-sided."
+      ],
+      "macroDrivers": [
+        "US yield moves",
+        "BOJ policy normalization",
+        "Risk sentiment and safe-haven flows"
+      ],
+      "performanceFocus": [
+        "Trend acceleration after yield breakouts",
+        "Reversal risk around intervention headlines",
+        "Overnight session directional persistence"
+      ],
+      "aiPrompts": [
+        "Use compare to inspect runs before and after BOJ policy shifts.",
+        "Check how classification templates react to intervention risk."
+      ]
+    },
+    {
+      "symbol": "USD_CHF",
+      "assetClass": "forex",
+      "name": "US Dollar / Swiss Franc",
+      "headline": "Defensive major pair tied to safe-haven flows and policy differentials.",
+      "description": "Good complement to USD_JPY when testing whether safe-haven dynamics alter research behavior.",
+      "tags": ["major", "defensive", "macro"],
+      "preferredInterval": "4h",
+      "performanceLookbackDays": 120,
+      "region": "United States / Switzerland",
+      "profileBullets": [
+        "Safe-haven demand can override slower macro trends.",
+        "SNB communication remains an important volatility source.",
+        "Moves often overlap with European risk sentiment."
+      ],
+      "macroDrivers": [
+        "SNB policy path",
+        "Broad dollar strength",
+        "European risk-off episodes"
+      ],
+      "performanceFocus": [
+        "Risk-off spikes and fade behavior",
+        "Correlation shifts versus EUR_USD",
+        "Trend quality during low-volatility sessions"
+      ],
+      "aiPrompts": [
+        "Compare safe-haven pair behavior across USD_CHF and USD_JPY.",
+        "Inspect whether saved strategy configs need tighter thresholds in defensive pairs."
+      ]
+    },
+    {
+      "symbol": "AUD_USD",
+      "assetClass": "forex",
+      "name": "Australian Dollar / US Dollar",
+      "headline": "Commodity-sensitive major with China and risk-appetite exposure.",
+      "description": "Useful when you want one growth-sensitive FX pair in the research mix.",
+      "tags": ["major", "commodity", "risk-on"],
+      "preferredInterval": "4h",
+      "performanceLookbackDays": 120,
+      "region": "Australia / United States",
+      "profileBullets": [
+        "China-sensitive growth expectations shape the medium-term story.",
+        "Risk sentiment can create cleaner trend-following periods than in some other majors.",
+        "Commodity backdrop matters more than local data alone."
+      ],
+      "macroDrivers": [
+        "RBA versus Fed policy path",
+        "China growth expectations",
+        "Broad risk appetite"
+      ],
+      "performanceFocus": [
+        "Trend strength during commodity rebounds",
+        "Breakouts around Asia-Pacific macro releases",
+        "Risk-on versus risk-off reversal speed"
+      ],
+      "aiPrompts": [
+        "Compare AUD_USD behavior against defensive pairs in mixed macro regimes.",
+        "Review whether recent assets indicate commodity-sensitive research interest."
+      ]
+    },
+    {
+      "symbol": "USD_CAD",
+      "assetClass": "forex",
+      "name": "US Dollar / Canadian Dollar",
+      "headline": "North American major influenced by rates and crude sensitivity.",
+      "description": "Practical pair for linking macro and commodity themes without adding new product scope.",
+      "tags": ["major", "oil", "rates"],
+      "preferredInterval": "4h",
+      "performanceLookbackDays": 120,
+      "region": "United States / Canada",
+      "profileBullets": [
+        "Oil sensitivity can skew the pair relative to pure rate differentials.",
+        "BOC policy and labor-market data remain important event catalysts.",
+        "North American macro releases often move both sides of the pair."
+      ],
+      "macroDrivers": [
+        "BOC versus Fed policy path",
+        "Crude oil trend",
+        "North American growth data"
+      ],
+      "performanceFocus": [
+        "Oil-led dislocations versus trend baseline",
+        "Breakouts around BOC and payroll events",
+        "Relative stability versus higher-beta commodity currencies"
+      ],
+      "aiPrompts": [
+        "Use compare to separate commodity-led and rates-led USD_CAD runs.",
+        "Check whether ML templates generalize between AUD_USD and USD_CAD."
+      ]
+    }
+  ]
+}

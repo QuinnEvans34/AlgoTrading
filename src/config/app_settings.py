@@ -27,6 +27,13 @@ class StorageSettings:
 
 
 @dataclass(frozen=True)
+class DatabaseSettings:
+    enabled: bool = False
+    url: str | None = None
+    echo: bool = False
+
+
+@dataclass(frozen=True)
 class PaperTradingDefaults:
     account_id: str = "paper-main"
     base_currency: str = "USD"
@@ -61,12 +68,23 @@ class ProviderSettings:
 
 
 @dataclass(frozen=True)
+class AIResearchSettings:
+    enabled: bool = False
+    openai_api_key: str | None = None
+    openai_model: str | None = None
+    openai_base_url: str | None = None
+    timeout_seconds: int = 30
+
+
+@dataclass(frozen=True)
 class AppSettings:
     api: APIServerSettings = APIServerSettings()
     storage: StorageSettings = StorageSettings()
+    database: DatabaseSettings = DatabaseSettings()
     paper_defaults: PaperTradingDefaults = PaperTradingDefaults()
     live_safety: LiveSafetySettings = LiveSafetySettings()
     provider_settings: ProviderSettings = ProviderSettings()
+    ai_research: AIResearchSettings = AIResearchSettings()
     feature_flags: FeatureFlags = FeatureFlags()
     default_strict_failures: bool = True
     default_persist_summary: bool = False
@@ -93,6 +111,11 @@ class AppSettings:
                     "API_DEFAULT_PAPER_TRADING_DIR",
                     "artifacts/paper_trading",
                 ),
+            ),
+            database=DatabaseSettings(
+                enabled=env_bool("DATABASE_ENABLED", False),
+                url=env_str("DATABASE_URL", "") or None,
+                echo=env_bool("DATABASE_ECHO", False),
             ),
             paper_defaults=PaperTradingDefaults(
                 account_id=env_str("API_PAPER_DEFAULT_ACCOUNT_ID", "paper-main"),
@@ -135,6 +158,13 @@ class AppSettings:
                 oanda_account_id=env_str("OANDA_ACCOUNT_ID", "") or None,
                 oanda_environment=env_str("OANDA_ENVIRONMENT", "practice"),
                 oanda_timeout_seconds=env_int("OANDA_TIMEOUT_SECONDS", 15),
+            ),
+            ai_research=AIResearchSettings(
+                enabled=env_bool("AI_RESEARCH_ENABLED", False),
+                openai_api_key=env_str("OPENAI_API_KEY", "") or None,
+                openai_model=env_str("OPENAI_MODEL", "") or None,
+                openai_base_url=env_str("OPENAI_BASE_URL", "") or None,
+                timeout_seconds=env_int("AI_RESEARCH_TIMEOUT_SECONDS", 30),
             ),
             feature_flags=FeatureFlags.from_env(),
             default_strict_failures=env_bool("API_DEFAULT_STRICT_FAILURES", True),

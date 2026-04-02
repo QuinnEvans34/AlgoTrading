@@ -92,6 +92,15 @@ nav {
   color: var(--muted);
 }
 
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .run-form,
 .result-panel {
   background: var(--panel);
@@ -295,6 +304,111 @@ button:disabled {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 0.8rem;
   margin-top: 1rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.dashboard-hero {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(231, 246, 241, 0.9));
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + 2px);
+  padding: 1.2rem;
+}
+
+.dashboard-link-card {
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.9rem;
+}
+
+.dashboard-link-card strong,
+.dashboard-link-card span {
+  display: block;
+}
+
+.dashboard-link-card span {
+  margin-top: 0.4rem;
+  color: var(--muted);
+}
+
+.asset-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.asset-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.asset-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.asset-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.asset-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+
+.asset-chip-row a,
+.asset-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.82rem;
+  background: var(--panel-soft);
+}
+
+.asset-chip-row a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.asset-detail-hero {
+  margin-top: 0.75rem;
+}
+
+.tab-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  background: white;
+  color: var(--text);
+}
+
+.tab-button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
 }
 
 .simple-list {

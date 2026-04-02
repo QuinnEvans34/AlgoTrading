@@ -97,6 +97,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Symbol</span>
         <input
+          aria-label="Live Symbol"
           value={form.symbol}
           onChange={(event) => setForm((prev) => ({ ...prev, symbol: event.target.value }))}
         />
@@ -104,6 +105,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Asset Class</span>
         <select
+          aria-label="Live Asset Class"
           value={form.assetClass}
           onChange={(event) =>
             setForm((prev) => ({
@@ -119,6 +121,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Side</span>
         <select
+          aria-label="Live Side"
           value={form.side}
           onChange={(event) =>
             setForm((prev) => ({ ...prev, side: event.target.value as LiveOrderSide }))
@@ -131,6 +134,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Order Type</span>
         <select
+          aria-label="Live Order Type"
           value={form.orderType}
           onChange={(event) =>
             setForm((prev) => ({ ...prev, orderType: event.target.value as LiveOrderType }))
@@ -143,6 +147,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Quantity</span>
         <input
+          aria-label="Live Quantity"
           type="number"
           min={0}
           value={form.quantity}
@@ -154,6 +159,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Limit Price</span>
         <input
+          aria-label="Live Limit Price"
           type="number"
           min={0}
           value={form.limitPrice}
@@ -164,6 +170,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Client Order Id</span>
         <input
+          aria-label="Live Client Order ID"
           value={form.clientOrderId}
           onChange={(event) =>
             setForm((prev) => ({ ...prev, clientOrderId: event.target.value }))
@@ -173,6 +180,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Idempotency Key</span>
         <input
+          aria-label="Live Idempotency Key"
           value={form.idempotencyKey}
           onChange={(event) =>
             setForm((prev) => ({ ...prev, idempotencyKey: event.target.value }))
@@ -182,6 +190,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Operator Id</span>
         <input
+          aria-label="Live Operator ID"
           value={form.operatorId}
           onChange={(event) => setForm((prev) => ({ ...prev, operatorId: event.target.value }))}
         />
@@ -189,6 +198,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Operator Note</span>
         <input
+          aria-label="Live Operator Note"
           value={form.operatorNote}
           onChange={(event) => setForm((prev) => ({ ...prev, operatorNote: event.target.value }))}
         />
@@ -196,6 +206,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline checkbox-row">
         <input
           type="checkbox"
+          aria-label="Confirm live execution"
           checked={form.confirmLiveExecution}
           onChange={(event) =>
             setForm((prev) => ({
@@ -209,6 +220,7 @@ export function ManualLiveOrderForm({
       <div className="field-inline">
         <span>Confirmation Text</span>
         <input
+          aria-label="Live Confirmation Text"
           value={form.confirmationText}
           placeholder={readiness?.confirmation_phrase ?? "EXECUTE LIVE ORDER"}
           onChange={(event) =>

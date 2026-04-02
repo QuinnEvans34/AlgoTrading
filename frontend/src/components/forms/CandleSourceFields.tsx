@@ -1,19 +1,11 @@
-import type { MarketDataFetchSource } from "../../lib/api/types";
-
-export type CandleSourceMode = "inline" | "fetch";
-
-export interface CandleSourceFormState {
-  mode: CandleSourceMode;
-  providerName: string;
-  start: string;
-  end: string;
-  limit: string;
-  inlineBars: number;
-}
+import type {
+  CandleSourceDraftState,
+  CandleSourceMode
+} from "../../lib/workflow/drafts";
 
 interface CandleSourceFieldsProps {
-  value: CandleSourceFormState;
-  onChange: (next: CandleSourceFormState) => void;
+  value: CandleSourceDraftState;
+  onChange: (next: CandleSourceDraftState) => void;
   providers: string[];
 }
 
@@ -111,20 +103,3 @@ export function CandleSourceFields({
     </section>
   );
 }
-
-function asUtcIso(datetimeLocal: string): string {
-  return new Date(datetimeLocal).toISOString();
-}
-
-export function buildFetchSource(
-  value: CandleSourceFormState
-): MarketDataFetchSource {
-  return {
-    source_type: "market_data_fetch",
-    provider_name: value.providerName.trim(),
-    start: asUtcIso(value.start),
-    end: asUtcIso(value.end),
-    ...(value.limit.trim() ? { limit: Number(value.limit) } : {})
-  };
-}
-

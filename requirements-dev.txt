@@ -1,1 +1,2 @@
 -r requirements-api.txt
+alembic>=1.13,<2.0

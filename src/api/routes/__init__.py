@@ -1,5 +1,6 @@
 """Route registration for the API layer."""
 
+from .asset_research import router as asset_research_router
 from .compare import router as compare_router
 from .health import router as health_router
 from .history import router as history_router
@@ -10,8 +11,10 @@ from .paper_trading import router as paper_trading_router
 from .research import router as research_router
 from .results import router as results_router
 from .settings import router as settings_router
+from .workflow import router as workflow_router
 
 __all__ = [
+    "asset_research_router",
     "health_router",
     "metadata_router",
     "market_data_router",
@@ -22,4 +25,5 @@ __all__ = [
     "paper_trading_router",
     "live_execution_router",
     "settings_router",
+    "workflow_router",
 ]
